@@ -27,18 +27,38 @@ function App() {
 
   const { cars, isLoaded, addCar, removeCar } = useCars(session);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState('ALL');
   const [activeTab, setActiveTab] = useState('home');
   const [isAdding, setIsAdding] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
 
   const filteredCars = useMemo(() => {
-    if (!searchQuery) return cars;
-    const lowerQuery = searchQuery.toLowerCase();
-    return cars.filter(car => 
-      car.name.toLowerCase().includes(lowerQuery) || 
-      (car.series && car.series.toLowerCase().includes(lowerQuery))
-    );
-  }, [cars, searchQuery]);
+    let result = cars;
+    
+    // Apply text search
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter(car => 
+        car.name.toLowerCase().includes(lowerQuery) || 
+        (car.series && car.series.toLowerCase().includes(lowerQuery))
+      );
+    }
+
+    // Apply category filter
+    if (filter !== 'ALL') {
+      if (filter === 'STH') {
+        result = result.filter(car => car.rarity === 'Super Treasure Hunt');
+      } else if (filter === 'PREMIUM') {
+        result = result.filter(car => car.rarity === 'Premium');
+      } else if (filter === 'VINTAGE') {
+        // Assume Vintage means year < 2000, or explicitly named Vintage.
+        // If year exists and < 2000, or we can just filter by rarity if needed.
+        result = result.filter(car => parseInt(car.year) < 2000 || (car.series && car.series.toLowerCase().includes('vintage')));
+      }
+    }
+
+    return result;
+  }, [cars, searchQuery, filter]);
 
   if (!isSessionLoaded) return null;
 
@@ -53,8 +73,14 @@ function App() {
     <div className="container">
       {activeTab === 'home' ? (
         <>
-          <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} userName={userFullName} />
-          <main style={{ paddingTop: '16px' }}>
+          <Header 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery} 
+            userName={userFullName} 
+            filter={filter}
+            setFilter={setFilter}
+          />
+          <main style={{ paddingTop: '8px' }}>
             <CarList cars={filteredCars} onCarClick={setSelectedCar} />
           </main>
         </>

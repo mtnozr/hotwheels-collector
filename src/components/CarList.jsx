@@ -4,22 +4,17 @@ import CarCard from './CarCard';
 const CarList = ({ cars, onCarClick }) => {
   if (!cars || cars.length === 0) {
     return (
-      <div className="empty-state animate-fade-in">
-        <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🏎️</div>
-        <h3>Henüz araba eklemedin</h3>
-        <p>Koleksiyonuna ilk arabanı eklemek için aşağıdaki + butonuna tıkla!</p>
+      <div className="empty-state animate-fade-in" style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '16px', opacity: 0.5 }}>🏁</div>
+        <h3 style={{ marginBottom: '8px', color: 'white' }}>Garaj Bomboş!</h3>
+        <p>Aşağıdaki ekle butonuna basarak ilk arabanı koleksiyona ekle.</p>
       </div>
     );
   }
 
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-      gap: '16px',
-      padding: '0 16px 20px'
-    }}>
-      {cars.map(car => (
+    <div className="car-grid">
+      {cars.map((car) => (
         <CarCard key={car.id} car={car} onClick={onCarClick} />
       ))}
     </div>

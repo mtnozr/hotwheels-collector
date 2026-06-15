@@ -1,52 +1,48 @@
 import React from 'react';
 
-const Header = ({ searchQuery, setSearchQuery, userName }) => {
-  // Basit bir kesme işareti kuralı: İsmin son harfine göre kesme işareti eklenebilir, ancak şimdilik sabit "'ın Garajı" veya "'in Garajı" kullanmak yerine, ismin sonuna sadece " Garajı" veya kesme işareti ekleyebiliriz.
-  // En kolayı, adın sadece ilk ismini alıp "'ın Garajı" yazmak veya doğrudan "[Ad Soyad] Garajı" yapmaktır.
-  const displayTitle = userName ? `${userName.split(' ')[0]}'ın Garajı` : "Garajım";
+const Header = ({ searchQuery, setSearchQuery, userName, filter, setFilter }) => {
+  const displayTitle = userName ? `${userName.split(' ')[0]}'ın Koleksiyonu` : "Koleksiyonum";
 
   return (
     <header className="app-header">
       <div className="header-top">
-        <div>
-          <h1 className="text-gradient" style={{ fontSize: '1.5rem' }}>{displayTitle}</h1>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Hot Wheels Koleksiyonum</p>
+        <button className="icon-btn" style={{ background: 'transparent' }}>👤</button>
+        <h1 className="text-gradient" style={{ fontSize: '1.2rem', fontWeight: '600' }}>{displayTitle}</h1>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button className="icon-btn" style={{ background: 'transparent', position: 'relative' }}>
+            🔔
+            <span style={{ position: 'absolute', top: '8px', right: '10px', width: '6px', height: '6px', background: 'var(--hw-orange)', borderRadius: '50%' }}></span>
+          </button>
+          <button className="icon-btn-avatar">
+            👦🏻
+          </button>
         </div>
-          <div style={{
-            background: 'linear-gradient(135deg, #e3000f, #ff4500)',
-            borderRadius: '12px 12px 12px 2px',
-            padding: '4px 8px',
-            color: '#fff',
-            fontWeight: '900',
-            fontSize: '0.75rem',
-            fontStyle: 'italic',
-            border: '2px solid #ffcc00',
-            boxShadow: '0 2px 8px rgba(227, 0, 15, 0.5)',
-            textAlign: 'center',
-            textShadow: '1px 1px 0px #000'
-          }}>
-            HOT<br/>WHEELS
-          </div>
       </div>
-      
-      <div className="search-bar" style={{ position: 'relative' }}>
-        <div style={{
-          position: 'absolute',
-          left: '12px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          color: 'var(--text-muted)'
-        }}>
-          🔍
-        </div>
+
+      <div className="search-container">
+        <span className="search-icon">🔍</span>
         <input 
           type="text" 
-          placeholder="Arabalarını ara..." 
-          className="input-field glass-panel"
+          className="search-input" 
+          placeholder="Arabaları Ara..." 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ paddingLeft: '40px', borderRadius: 'var(--radius-full)' }}
         />
+      </div>
+
+      <div className="filter-scroll">
+        <button className={`filter-pill ${filter === 'ALL' ? 'active' : ''}`} onClick={() => setFilter('ALL')}>
+          TÜMÜ
+        </button>
+        <button className={`filter-pill ${filter === 'STH' ? 'active' : ''}`} onClick={() => setFilter('STH')}>
+          SUPER TREASURE HUNT
+        </button>
+        <button className={`filter-pill ${filter === 'PREMIUM' ? 'active' : ''}`} onClick={() => setFilter('PREMIUM')}>
+          PREMİUM
+        </button>
+        <button className={`filter-pill ${filter === 'VINTAGE' ? 'active' : ''}`} onClick={() => setFilter('VINTAGE')}>
+          VİNTAGE
+        </button>
       </div>
     </header>
   );

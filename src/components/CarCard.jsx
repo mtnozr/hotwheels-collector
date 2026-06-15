@@ -1,78 +1,55 @@
 import React from 'react';
 
 const CarCard = ({ car, onClick }) => {
-  // Rarity color mapping
-  const rarityColors = {
-    'Common': '#a0a5b1',
-    'Treasure Hunt': '#005bbb',
-    'Super Treasure Hunt': '#ff5b00',
-    'Premium': '#ff8a00'
+  // Rarity styling
+  const getRarityDisplay = (rarity) => {
+    switch (rarity) {
+      case 'Super Treasure Hunt':
+        return { text: 'STH', color: '#4ade80', stars: '★★★★' };
+      case 'Treasure Hunt':
+        return { text: 'TH', color: '#60a5fa', stars: '★★★☆' };
+      case 'Premium':
+        return { text: 'PRM', color: '#c084fc', stars: '★★★☆' };
+      default:
+        return { text: 'CMN', color: '#94a3b8', stars: '★★☆☆' };
+    }
   };
 
-  const badgeColor = rarityColors[car.rarity] || rarityColors['Common'];
+  const rarityInfo = getRarityDisplay(car.rarity);
 
   return (
-    <div 
-      className="car-card glass-panel animate-fade-in" 
-      onClick={() => onClick && onClick(car)}
-      style={{
-        cursor: 'pointer',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative'
-      }}
-    >
-      <div 
-        className="car-image-container"
-        style={{
-          height: '140px',
-          backgroundColor: 'rgba(0,0,0,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          padding: '10px'
-        }}
-      >
+    <div className="car-card-premium animate-fade-in" onClick={() => onClick(car)} style={{ '--card-glow': car.color || '#ff5b00' }}>
+      
+      {car.series && (
+        <div className="card-number-badge">
+          {car.series}
+        </div>
+      )}
+
+      <div className="card-image-container">
         {car.image ? (
-          <img 
-            src={car.image} 
-            alt={car.name} 
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-          />
+          <img src={car.image} alt={car.name} />
         ) : (
-          <div style={{ color: 'var(--text-muted)' }}>📸 Foto Yok</div>
+          <div style={{ fontSize: '3rem', opacity: 0.5 }}>🚗</div>
         )}
       </div>
 
-      <div style={{ padding: '12px' }}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {car.name}
-        </h3>
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
-          {car.series} {car.year ? `• ${car.year}` : ''}
-        </p>
+      <div className="card-content">
+        <div className="card-title">{car.name}</div>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-          <span style={{ 
-            fontSize: '0.7rem', 
-            padding: '4px 8px', 
-            borderRadius: '4px',
-            background: 'rgba(255,255,255,0.1)',
-            color: badgeColor,
-            fontWeight: '600',
-            border: `1px solid ${badgeColor}40`
-          }}>
-            {car.rarity || 'Common'}
-          </span>
-          <div style={{ 
-            width: '16px', 
-            height: '16px', 
-            borderRadius: '50%', 
-            backgroundColor: car.color || '#fff',
-            border: '1px solid var(--border-color)'
-          }} title={`Renk: ${car.color}`} />
+        <div className="card-stats">
+          <div className="stat-col">
+            <span className="stat-label">Rarity</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span className="rarity-badge" style={{ color: rarityInfo.color }}>{rarityInfo.text}</span>
+            </div>
+            <span className="stars">{rarityInfo.stars}</span>
+          </div>
+
+          <div className="stat-col" style={{ alignItems: 'flex-end' }}>
+            <span className="stat-label">Year</span>
+            <span className="stat-value">{car.year || '-'}</span>
+          </div>
         </div>
       </div>
     </div>
