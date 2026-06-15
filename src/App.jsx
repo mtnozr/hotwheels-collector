@@ -7,6 +7,7 @@ import BottomNav from './components/BottomNav';
 import AddCarForm from './components/AddCarForm';
 import CarDetailsModal from './components/CarDetailsModal';
 import Auth from './components/Auth';
+import Profile from './components/Profile';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -87,40 +88,7 @@ function App() {
           </main>
         </>
       ) : (
-        <div style={{ padding: '40px 16px', textAlign: 'center' }}>
-          <div style={{ 
-            width: '100px', height: '100px', borderRadius: '50%', 
-            background: 'linear-gradient(135deg, var(--hw-orange), #ff8a00)',
-            margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '3rem',
-            boxShadow: '0 4px 14px rgba(255, 91, 0, 0.4)'
-          }}>
-            👦🏻
-          </div>
-          <h2 style={{ marginBottom: '8px' }}>{userFullName}</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
-            Koleksiyonunda <strong>{cars.filter(c => c.user_id === session.user.id).length}</strong> araban var!
-          </p>
-          <div className="glass-panel" style={{ padding: '20px', textAlign: 'left', marginBottom: '20px' }}>
-            <h3 style={{ marginBottom: '12px', fontSize: '1.1rem' }}>Global İstatistikler</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
-              <span>Super Treasure Hunt:</span>
-              <strong>{cars.filter(c => c.rarity === 'Super Treasure Hunt').length}</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-              <span>Normal (Common):</span>
-              <strong>{cars.filter(c => c.rarity === 'Common').length}</strong>
-            </div>
-          </div>
-          
-          <button 
-            className="btn-primary" 
-            style={{ background: 'transparent', border: '1px solid #ff4d4d', color: '#ff4d4d', boxShadow: 'none' }}
-            onClick={() => supabase.auth.signOut()}
-          >
-            Çıkış Yap
-          </button>
-        </div>
+        <Profile cars={cars} session={session} />
       )}
 
       <BottomNav 
