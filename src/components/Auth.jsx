@@ -19,7 +19,7 @@ const Auth = () => {
       setLoading(false);
       return;
     }
-    const fakeEmail = `${safeUsername}@garaj.local`;
+    const fakeEmail = `${safeUsername}@garajapp.com`;
 
     try {
       if (isLogin) {
