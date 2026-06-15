@@ -30,7 +30,7 @@ const AddCarForm = ({ onClose, onAdd }) => {
     try {
       setIsAnalyzing(true);
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
       // Extract base64 part and mime type
       const parts = formData.image.split(',');
