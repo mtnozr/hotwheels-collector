@@ -10,7 +10,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
         </div>
         <div style={{ width: '80px', display: 'flex', alignItems: 'center' }}>
           <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/f/f4/Hot_Wheels_logo.svg" 
+            src="/hw-logo.png" 
             alt="Hot Wheels Logo" 
             style={{ width: '100%', filter: 'drop-shadow(0 2px 8px rgba(255, 91, 0, 0.4))' }} 
           />
