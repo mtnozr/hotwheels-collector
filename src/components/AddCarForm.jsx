@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { removeBackground } from '@imgly/background-removal';
 
 const AddCarForm = ({ onClose, onAdd }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const AddCarForm = ({ onClose, onAdd }) => {
     image: null
   });
   
+  const [isRemovingBg, setIsRemovingBg] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleImageChange = (e) => {
@@ -20,6 +22,30 @@ const AddCarForm = ({ onClose, onAdd }) => {
         setFormData({ ...formData, image: reader.result });
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveBackground = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!formData.image || isRemovingBg) return;
+    
+    try {
+      setIsRemovingBg(true);
+      // Remove background
+      const blob = await removeBackground(formData.image);
+      
+      // Convert blob to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, image: reader.result });
+        setIsRemovingBg(false);
+      };
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error("Error removing background:", error);
+      alert("Arka plan silinirken bir hata oluştu.");
+      setIsRemovingBg(false);
     }
   };
 
@@ -49,12 +75,12 @@ const AddCarForm = ({ onClose, onAdd }) => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: '20px',
+              marginBottom: '10px',
               cursor: 'pointer',
               overflow: 'hidden',
               position: 'relative'
             }}
-            onClick={() => fileInputRef.current.click()}
+            onClick={() => !isRemovingBg && fileInputRef.current.click()}
           >
             {formData.image ? (
               <img src={formData.image} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -64,14 +90,50 @@ const AddCarForm = ({ onClose, onAdd }) => {
                 <span style={{ color: 'var(--text-muted)' }}>Fotoğraf Ekle</span>
               </>
             )}
+            {isRemovingBg && (
+              <div style={{
+                position: 'absolute',
+                top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(0,0,0,0.7)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                backdropFilter: 'blur(4px)'
+              }}>
+                <div style={{ fontSize: '2rem', animation: 'spin 1s linear infinite' }}>⏳</div>
+                <span style={{ marginTop: '8px', fontSize: '0.9rem' }}>Yapay Zeka Çalışıyor...</span>
+              </div>
+            )}
             <input 
               type="file" 
               accept="image/*" 
               ref={fileInputRef} 
               onChange={handleImageChange}
               style={{ display: 'none' }}
+              disabled={isRemovingBg}
             />
           </div>
+
+          {formData.image && (
+            <button 
+              type="button" 
+              onClick={handleRemoveBackground}
+              disabled={isRemovingBg}
+              className="btn-primary"
+              style={{ 
+                width: '100%', 
+                marginBottom: '20px', 
+                background: 'linear-gradient(135deg, #8A2387, #E94057, #F27121)',
+                boxShadow: '0 4px 14px rgba(233, 64, 87, 0.4)',
+                border: 'none',
+                opacity: isRemovingBg ? 0.7 : 1
+              }}
+            >
+              🪄 Arka Planı Sil (Yapay Zeka)
+            </button>
+          )}
 
           <div className="input-group">
             <label className="input-label">Araba Adı *</label>
@@ -140,6 +202,9 @@ const AddCarForm = ({ onClose, onAdd }) => {
           </button>
         </form>
       </div>
+      <style>{`
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+      `}</style>
     </div>
   );
 };
