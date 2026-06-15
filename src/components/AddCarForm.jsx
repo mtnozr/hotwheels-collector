@@ -1,0 +1,147 @@
+import React, { useState, useRef } from 'react';
+
+const AddCarForm = ({ onClose, onAdd }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    series: '',
+    year: '',
+    color: '#ff5b00',
+    rarity: 'Common',
+    image: null
+  });
+  
+  const fileInputRef = useRef(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, image: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name) return alert('Lütfen araba adını girin!');
+    onAdd(formData);
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay animate-fade-in" style={{ zIndex: 100 }}>
+      <div className="modal-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2 style={{ fontSize: '1.25rem' }}>Yeni Araba Ekle</h2>
+          <button className="btn-icon" onClick={onClose}>✕</button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          {/* Image Upload Area */}
+          <div 
+            style={{
+              height: '160px',
+              border: '2px dashed var(--border-color)',
+              borderRadius: 'var(--radius-lg)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '20px',
+              cursor: 'pointer',
+              overflow: 'hidden',
+              position: 'relative'
+            }}
+            onClick={() => fileInputRef.current.click()}
+          >
+            {formData.image ? (
+              <img src={formData.image} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            ) : (
+              <>
+                <span style={{ fontSize: '2rem', marginBottom: '8px' }}>📸</span>
+                <span style={{ color: 'var(--text-muted)' }}>Fotoğraf Ekle</span>
+              </>
+            )}
+            <input 
+              type="file" 
+              accept="image/*" 
+              ref={fileInputRef} 
+              onChange={handleImageChange}
+              style={{ display: 'none' }}
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Araba Adı *</label>
+            <input 
+              type="text" 
+              className="input-field" 
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+              placeholder="Örn: '69 Dodge Charger"
+              required
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <div className="input-group" style={{ flex: 1 }}>
+              <label className="input-label">Seri</label>
+              <input 
+                type="text" 
+                className="input-field" 
+                value={formData.series}
+                onChange={(e) => setFormData({...formData, series: e.target.value})}
+                placeholder="Örn: HW Flames"
+              />
+            </div>
+            <div className="input-group" style={{ width: '100px' }}>
+              <label className="input-label">Yıl</label>
+              <input 
+                type="number" 
+                className="input-field" 
+                value={formData.year}
+                onChange={(e) => setFormData({...formData, year: e.target.value})}
+                placeholder="2023"
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <div className="input-group" style={{ flex: 1 }}>
+              <label className="input-label">Nadirlik</label>
+              <select 
+                className="input-field" 
+                value={formData.rarity}
+                onChange={(e) => setFormData({...formData, rarity: e.target.value})}
+                style={{ appearance: 'none', backgroundColor: 'rgba(0,0,0,0.2)' }}
+              >
+                <option value="Common">Normal (Common)</option>
+                <option value="Treasure Hunt">Treasure Hunt</option>
+                <option value="Super Treasure Hunt">Super Treasure Hunt (STH)</option>
+                <option value="Premium">Premium</option>
+              </select>
+            </div>
+            <div className="input-group" style={{ width: '80px' }}>
+              <label className="input-label">Renk</label>
+              <input 
+                type="color" 
+                className="input-field" 
+                value={formData.color}
+                onChange={(e) => setFormData({...formData, color: e.target.value})}
+                style={{ padding: '4px', height: '45px', cursor: 'pointer' }}
+              />
+            </div>
+          </div>
+
+          <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '10px' }}>
+            Koleksiyona Ekle
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default AddCarForm;
