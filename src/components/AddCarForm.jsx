@@ -29,8 +29,35 @@ const AddCarForm = ({ onClose, onAdd }) => {
 
     try {
       setIsAnalyzing(true);
+      
+      // Dinamik olarak kullanılabilir modelleri çek (Model silinmesi/değişmesi sorununu çözer)
+      const modelsResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      const modelsData = await modelsResp.json();
+      
+      let selectedModel = "gemini-1.5-flash"; // Fallback
+      if (modelsData && modelsData.models) {
+        // İçinde 'flash' geçen ve içerik üretebilen ilk modeli bul (Örn: gemini-2.0-flash, gemini-3.0-flash)
+        const flashModels = modelsData.models.filter(m => 
+          m.supportedGenerationMethods?.includes('generateContent') && 
+          m.name.includes('flash')
+        );
+        if (flashModels.length > 0) {
+          selectedModel = flashModels[0].name.replace('models/', '');
+        } else {
+          // Eğer flash yoksa 'pro' modelini bul
+          const proModels = modelsData.models.filter(m => 
+            m.supportedGenerationMethods?.includes('generateContent') && 
+            m.name.includes('pro')
+          );
+          if (proModels.length > 0) {
+            selectedModel = proModels[0].name.replace('models/', '');
+          }
+        }
+      }
+
+      console.log("Selected Gemini Model:", selectedModel);
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const model = genAI.getGenerativeModel({ model: selectedModel });
 
       // Extract base64 part and mime type
       const parts = formData.image.split(',');
