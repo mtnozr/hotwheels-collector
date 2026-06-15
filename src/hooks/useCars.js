@@ -1,54 +1,75 @@
 import { useState, useEffect } from 'react';
-
-const STORAGE_KEY = 'hw_cars_collection';
+import { supabase } from '../supabaseClient';
 
 export function useCars() {
   const [cars, setCars] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Load cars from local storage on mount
-    const savedCars = localStorage.getItem(STORAGE_KEY);
-    if (savedCars) {
-      try {
-        setCars(JSON.parse(savedCars));
-      } catch (e) {
-        console.error('Error parsing cars from local storage', e);
-      }
-    }
-    setIsLoaded(true);
+    fetchCars();
   }, []);
 
-  useEffect(() => {
-    // Save cars to local storage whenever they change
-    if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cars));
+  const fetchCars = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('cars')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setCars(data || []);
+    } catch (error) {
+      console.error('Error fetching cars:', error);
+    } finally {
+      setIsLoaded(true);
     }
-  }, [cars, isLoaded]);
-
-  const addCar = (carData) => {
-    const newCar = {
-      id: crypto.randomUUID(),
-      createdAt: Date.now(),
-      ...carData
-    };
-    setCars(prev => [newCar, ...prev]);
-    return newCar;
   };
 
-  const removeCar = (id) => {
-    setCars(prev => prev.filter(car => car.id !== id));
+  const addCar = async (carData) => {
+    try {
+      const { data, error } = await supabase
+        .from('cars')
+        .insert([{
+          name: carData.name,
+          series: carData.series,
+          year: carData.year,
+          color: carData.color,
+          rarity: carData.rarity,
+          image: carData.image // storing base64 as text
+        }])
+        .select();
+        
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        setCars(prev => [data[0], ...prev]);
+        return data[0];
+      }
+    } catch (error) {
+      console.error('Error adding car:', error);
+      alert('Araba eklenirken bir hata oluştu. Veritabanı tablosunun (cars) oluşturulduğundan emin olun.');
+    }
   };
 
-  const updateCar = (id, updatedData) => {
-    setCars(prev => prev.map(car => car.id === id ? { ...car, ...updatedData } : car));
+  const removeCar = async (id) => {
+    try {
+      const { error } = await supabase
+        .from('cars')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      setCars(prev => prev.filter(car => car.id !== id));
+    } catch (error) {
+      console.error('Error removing car:', error);
+      alert('Araba silinirken hata oluştu.');
+    }
   };
 
   return {
     cars,
     isLoaded,
     addCar,
-    removeCar,
-    updateCar
+    removeCar
   };
 }
