@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 
-export function useCars() {
+export function useCars(session) {
   const [cars, setCars] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    fetchCars();
-  }, []);
+    if (session) {
+      fetchCars();
+    }
+  }, [session]);
 
   const fetchCars = async () => {
     try {
@@ -26,6 +28,7 @@ export function useCars() {
   };
 
   const addCar = async (carData) => {
+    if (!session) return;
     try {
       const { data, error } = await supabase
         .from('cars')
@@ -35,7 +38,8 @@ export function useCars() {
           year: carData.year,
           color: carData.color,
           rarity: carData.rarity,
-          image: carData.image // storing base64 as text
+          image: carData.image,
+          user_id: session.user.id
         }])
         .select();
         
@@ -47,7 +51,7 @@ export function useCars() {
       }
     } catch (error) {
       console.error('Error adding car:', error);
-      alert('Araba eklenirken bir hata oluştu. Veritabanı tablosunun (cars) oluşturulduğundan emin olun.');
+      alert('Araba eklenirken bir hata oluştu.');
     }
   };
 

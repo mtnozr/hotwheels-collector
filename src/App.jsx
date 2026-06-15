@@ -1,13 +1,31 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { supabase } from './supabaseClient';
 import { useCars } from './hooks/useCars';
 import Header from './components/Header';
 import CarList from './components/CarList';
 import BottomNav from './components/BottomNav';
 import AddCarForm from './components/AddCarForm';
 import CarDetailsModal from './components/CarDetailsModal';
+import Auth from './components/Auth';
 
 function App() {
-  const { cars, isLoaded, addCar, removeCar } = useCars();
+  const [session, setSession] = useState(null);
+  const [isSessionLoaded, setIsSessionLoaded] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setIsSessionLoaded(true);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const { cars, isLoaded, addCar, removeCar } = useCars(session);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('home');
   const [isAdding, setIsAdding] = useState(false);
@@ -22,7 +40,14 @@ function App() {
     );
   }, [cars, searchQuery]);
 
-  if (!isLoaded) return null;
+  if (!isSessionLoaded) return null;
+
+  if (!session) {
+    return <Auth />;
+  }
+
+  const userEmail = session.user.email;
+  const username = userEmail.split('@')[0];
 
   return (
     <div className="container">
@@ -42,14 +67,14 @@ function App() {
             fontSize: '3rem',
             boxShadow: '0 4px 14px rgba(255, 91, 0, 0.4)'
           }}>
-            👦🏻
+            👤
           </div>
-          <h2 style={{ marginBottom: '8px' }}>Kağan ÖZER</h2>
+          <h2 style={{ marginBottom: '8px' }}>{username}</h2>
           <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
-            Toplam <strong>{cars.length}</strong> araban var!
+            Koleksiyonunda <strong>{cars.filter(c => c.user_id === session.user.id).length}</strong> araban var!
           </p>
-          <div className="glass-panel" style={{ padding: '20px', textAlign: 'left' }}>
-            <h3 style={{ marginBottom: '12px', fontSize: '1.1rem' }}>İstatistikler</h3>
+          <div className="glass-panel" style={{ padding: '20px', textAlign: 'left', marginBottom: '20px' }}>
+            <h3 style={{ marginBottom: '12px', fontSize: '1.1rem' }}>Global İstatistikler</h3>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
               <span>Super Treasure Hunt:</span>
               <strong>{cars.filter(c => c.rarity === 'Super Treasure Hunt').length}</strong>
@@ -59,6 +84,14 @@ function App() {
               <strong>{cars.filter(c => c.rarity === 'Common').length}</strong>
             </div>
           </div>
+          
+          <button 
+            className="btn-primary" 
+            style={{ background: 'transparent', border: '1px solid #ff4d4d', color: '#ff4d4d', boxShadow: 'none' }}
+            onClick={() => supabase.auth.signOut()}
+          >
+            Çıkış Yap
+          </button>
         </div>
       )}
 
@@ -78,6 +111,7 @@ function App() {
       {selectedCar && (
         <CarDetailsModal 
           car={selectedCar} 
+          currentUserId={session.user.id}
           onClose={() => setSelectedCar(null)} 
           onDelete={removeCar}
         />
