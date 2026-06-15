@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { removeBackground } from '@imgly/background-removal';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const AddCarForm = ({ onClose, onAdd }) => {
   const [formData, setFormData] = useState({
@@ -14,7 +15,66 @@ const AddCarForm = ({ onClose, onAdd }) => {
   });
   
   const [isRemovingBg, setIsRemovingBg] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const fileInputRef = useRef(null);
+
+  const handleAnalyzeImage = async () => {
+    if (!formData.image) return;
+    
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      alert('Gemini API Anahtarı bulunamadı! Lütfen ayarlardan veya Vercel üzerinden VITE_GEMINI_API_KEY ekleyin.');
+      return;
+    }
+
+    try {
+      setIsAnalyzing(true);
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      // Extract base64 part and mime type
+      const parts = formData.image.split(',');
+      const mimeType = parts[0].match(/:(.*?);/)[1];
+      const base64Data = parts[1];
+
+      const imageParts = [
+        {
+          inlineData: {
+            data: base64Data,
+            mimeType
+          }
+        }
+      ];
+
+      const prompt = `Bu fotoğraftaki Hot Wheels arabasını incele. Bana şu bilgileri JSON formatında ver: 
+      "name" (Arabanın tam adı), 
+      "series" (Serisi, okuyabiliyorsan), 
+      "year" (Üretim Yılı, kutuda yazıyorsa veya tahmini), 
+      "rarity" ("Common", "Treasure Hunt", "Super Treasure Hunt", veya "Premium" değerlerinden biri). 
+      Sadece geçerli bir JSON objesi döndür, başka hiçbir metin ekleme.`;
+
+      const result = await model.generateContent([prompt, ...imageParts]);
+      const responseText = result.response.text();
+      
+      // Temizleme: Eğer model markdown (```json ... ```) dönerse temizle
+      const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsedData = JSON.parse(cleanedText);
+
+      setFormData(prev => ({
+        ...prev,
+        name: parsedData.name || prev.name,
+        series: parsedData.series || prev.series,
+        year: parsedData.year || prev.year,
+        rarity: parsedData.rarity || prev.rarity
+      }));
+
+    } catch (error) {
+      console.error("AI Analysis Error:", error);
+      alert('Arabayı analiz ederken bir sorun oluştu. Lütfen tekrar deneyin.');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -116,22 +176,41 @@ const AddCarForm = ({ onClose, onAdd }) => {
           </div>
 
           {formData.image && (
-            <button 
-              type="button" 
-              onClick={handleRemoveBackground}
-              disabled={isRemovingBg}
-              className="btn-primary"
-              style={{ 
-                width: '100%', 
-                marginBottom: '20px', 
-                background: 'linear-gradient(135deg, #8A2387, #E94057, #F27121)',
-                boxShadow: '0 4px 14px rgba(233, 64, 87, 0.4)',
-                border: 'none',
-                opacity: isRemovingBg ? 0.7 : 1
-              }}
-            >
-              🪄 Arka Planı Sil (Yapay Zeka)
-            </button>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+              <button 
+                type="button" 
+                onClick={handleRemoveBackground}
+                disabled={isRemovingBg || isAnalyzing}
+                className="btn-primary"
+                style={{ 
+                  flex: 1, 
+                  background: 'linear-gradient(135deg, #8A2387, #E94057)',
+                  border: 'none',
+                  padding: '10px',
+                  fontSize: '0.85rem',
+                  opacity: (isRemovingBg || isAnalyzing) ? 0.7 : 1
+                }}
+              >
+                {isRemovingBg ? '⏳ Siliniyor...' : '✂️ Arka Planı Sil'}
+              </button>
+              
+              <button 
+                type="button" 
+                onClick={handleAnalyzeImage}
+                disabled={isRemovingBg || isAnalyzing}
+                className="btn-primary"
+                style={{ 
+                  flex: 1, 
+                  background: 'linear-gradient(135deg, #0f9b0f, #00d2ff)',
+                  border: 'none',
+                  padding: '10px',
+                  fontSize: '0.85rem',
+                  opacity: (isRemovingBg || isAnalyzing) ? 0.7 : 1
+                }}
+              >
+                {isAnalyzing ? '⏳ İnceleniyor...' : '✨ Yapay Zeka ile Tanı'}
+              </button>
+            </div>
           )}
 
           <div className="input-group">
