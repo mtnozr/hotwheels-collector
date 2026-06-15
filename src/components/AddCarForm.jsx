@@ -53,12 +53,15 @@ const AddCarForm = ({ onClose, onAdd }) => {
       "rarity" ("Common", "Treasure Hunt", "Super Treasure Hunt", veya "Premium" değerlerinden biri). 
       Sadece geçerli bir JSON objesi döndür, başka hiçbir metin ekleme.`;
 
-      const result = await model.generateContent([prompt, ...imageParts]);
+      const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [ { text: prompt }, ...imageParts ] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+        }
+      });
       const responseText = result.response.text();
       
-      // Temizleme: Eğer model markdown (```json ... ```) dönerse temizle
-      const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-      const parsedData = JSON.parse(cleanedText);
+      const parsedData = JSON.parse(responseText);
 
       setFormData(prev => ({
         ...prev,
@@ -70,7 +73,7 @@ const AddCarForm = ({ onClose, onAdd }) => {
 
     } catch (error) {
       console.error("AI Analysis Error:", error);
-      alert('Arabayı analiz ederken bir sorun oluştu. Lütfen tekrar deneyin.');
+      alert('Hata detayı: ' + (error.message || JSON.stringify(error)));
     } finally {
       setIsAnalyzing(false);
     }
