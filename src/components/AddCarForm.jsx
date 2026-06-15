@@ -8,6 +8,8 @@ const AddCarForm = ({ onClose, onAdd }) => {
     year: '',
     color: '#ff5b00',
     rarity: 'Common',
+    price: '',
+    notes: '',
     image: null
   });
   
@@ -32,10 +34,7 @@ const AddCarForm = ({ onClose, onAdd }) => {
     
     try {
       setIsRemovingBg(true);
-      // Remove background
       const blob = await removeBackground(formData.image);
-      
-      // Convert blob to base64
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData({ ...formData, image: reader.result });
@@ -57,11 +56,11 @@ const AddCarForm = ({ onClose, onAdd }) => {
   };
 
   return (
-    <div className="modal-overlay animate-fade-in" style={{ zIndex: 100 }}>
+    <div className="modal-overlay animate-fade-in" style={{ zIndex: 200 }}>
       <div className="modal-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ fontSize: '1.25rem' }}>Yeni Araba Ekle</h2>
-          <button className="btn-icon" onClick={onClose}>✕</button>
+          <button className="icon-btn" style={{ background: 'transparent', border: 'none' }} onClick={onClose}>✕</button>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -185,21 +184,44 @@ const AddCarForm = ({ onClose, onAdd }) => {
                 <option value="Premium">Premium</option>
               </select>
             </div>
-            <div className="input-group" style={{ width: '80px' }}>
-              <label className="input-label">Renk</label>
+            <div className="input-group" style={{ width: '120px' }}>
+              <label className="input-label">Değeri (₺)</label>
+              <input 
+                type="number" 
+                className="input-field" 
+                value={formData.price}
+                onChange={(e) => setFormData({...formData, price: e.target.value})}
+                placeholder="Örn: 250"
+              />
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Notlar</label>
+            <textarea 
+              className="input-field" 
+              value={formData.notes}
+              onChange={(e) => setFormData({...formData, notes: e.target.value})}
+              placeholder="Araba hakkında özel notlar, nereden alındığı vs."
+              rows="2"
+              style={{ resize: 'none' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
+            <div className="input-group" style={{ width: '60px', marginBottom: 0 }}>
               <input 
                 type="color" 
                 className="input-field" 
                 value={formData.color}
                 onChange={(e) => setFormData({...formData, color: e.target.value})}
-                style={{ padding: '4px', height: '45px', cursor: 'pointer' }}
+                style={{ padding: '2px', height: '48px', cursor: 'pointer' }}
               />
             </div>
+            <button type="submit" className="btn-primary" style={{ flex: 1 }}>
+              Koleksiyona Ekle
+            </button>
           </div>
-
-          <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '10px' }}>
-            Koleksiyona Ekle
-          </button>
         </form>
       </div>
       <style>{`

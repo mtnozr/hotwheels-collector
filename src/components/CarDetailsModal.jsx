@@ -61,6 +61,10 @@ const CarDetailsModal = ({ car, currentUserId, onClose, onDelete }) => {
             <strong>{car.year || '-'}</strong>
           </p>
           <p style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
+            <span style={{ color: 'var(--text-muted)' }}>Değeri:</span> 
+            <strong style={{ color: '#4ade80' }}>{car.price ? `₺${car.price}` : '-'}</strong>
+          </p>
+          <p style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
             <span style={{ color: 'var(--text-muted)' }}>Nadirlik:</span> 
             <strong style={{ color: car.rarity === 'Super Treasure Hunt' ? 'var(--hw-orange)' : 'inherit' }}>{car.rarity}</strong>
           </p>
@@ -74,6 +78,12 @@ const CarDetailsModal = ({ car, currentUserId, onClose, onDelete }) => {
               border: '1px solid var(--border-color)'
             }}></span>
           </p>
+          {car.notes && (
+            <div style={{ padding: '12px 0', borderBottom: '1px solid var(--border-color)' }}>
+              <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Notlar:</span> 
+              <p style={{ fontSize: '0.9rem', color: 'white', lineHeight: '1.4' }}>{car.notes}</p>
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>

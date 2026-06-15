@@ -40,7 +40,8 @@ const CarCard = ({ car, onClick }) => {
         <div className="card-stats">
           <div className="stat-col">
             <span className="stat-label">Rarity</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {car.price && <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'white' }}>₺{car.price}</span>}
               <span className="rarity-badge" style={{ color: rarityInfo.color }}>{rarityInfo.text}</span>
             </div>
             <span className="stars">{rarityInfo.stars}</span>

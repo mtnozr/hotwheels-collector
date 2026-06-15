@@ -38,6 +38,8 @@ export function useCars(session) {
           year: carData.year,
           color: carData.color,
           rarity: carData.rarity,
+          price: carData.price,
+          notes: carData.notes,
           image: carData.image,
           user_id: session.user.id
         }])
