@@ -26,11 +26,12 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const { cars, isLoaded, addCar, removeCar } = useCars(session);
+  const { cars, isLoaded, addCar, updateCar, removeCar } = useCars(session);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('ALL');
   const [activeTab, setActiveTab] = useState('home');
   const [isAdding, setIsAdding] = useState(false);
+  const [editingCar, setEditingCar] = useState(null);
   const [selectedCar, setSelectedCar] = useState(null);
 
   const filteredCars = useMemo(() => {
@@ -97,10 +98,20 @@ function App() {
         onAddClick={() => setIsAdding(true)} 
       />
 
-      {isAdding && (
+      {(isAdding || editingCar) && (
         <AddCarForm 
-          onClose={() => setIsAdding(false)} 
-          onAdd={addCar} 
+          initialData={editingCar}
+          onClose={() => {
+            setIsAdding(false);
+            setEditingCar(null);
+          }} 
+          onSubmit={async (data) => {
+            if (editingCar) {
+              await updateCar(editingCar.id, data);
+            } else {
+              await addCar(data);
+            }
+          }} 
         />
       )}
 
@@ -110,6 +121,7 @@ function App() {
           currentUserId={session.user.id}
           onClose={() => setSelectedCar(null)} 
           onDelete={removeCar}
+          onEdit={(car) => setEditingCar(car)}
         />
       )}
     </div>

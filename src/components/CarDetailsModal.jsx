@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CarDetailsModal = ({ car, currentUserId, onClose, onDelete }) => {
+const CarDetailsModal = ({ car, currentUserId, onClose, onDelete, onEdit }) => {
   if (!car) return null;
 
   const handleShare = async () => {
@@ -96,18 +96,30 @@ const CarDetailsModal = ({ car, currentUserId, onClose, onDelete }) => {
           </button>
           
           {currentUserId === car.user_id && (
-            <button 
-              className="btn-primary" 
-              style={{ flex: 1, background: 'rgba(255, 0, 0, 0.2)', color: '#ff4d4d', boxShadow: 'none' }}
-              onClick={() => {
-                if (window.confirm('Bu arabayı silmek istediğinden emin misin?')) {
-                  onDelete(car.id);
+            <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+              <button 
+                className="btn-primary" 
+                style={{ flex: 1, background: 'rgba(255, 255, 255, 0.1)', color: 'white', boxShadow: 'none' }}
+                onClick={() => {
+                  onEdit(car);
                   onClose();
-                }
-              }}
-            >
-              🗑️ Sil
-            </button>
+                }}
+              >
+                ✏️
+              </button>
+              <button 
+                className="btn-primary" 
+                style={{ flex: 1, background: 'rgba(255, 0, 0, 0.2)', color: '#ff4d4d', boxShadow: 'none' }}
+                onClick={() => {
+                  if (window.confirm('Bu arabayı silmek istediğinden emin misin?')) {
+                    onDelete(car.id);
+                    onClose();
+                  }
+                }}
+              >
+                🗑️
+              </button>
+            </div>
           )}
         </div>
       </div>

@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 import { removeBackground } from '@imgly/background-removal';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const AddCarForm = ({ onClose, onAdd }) => {
-  const [formData, setFormData] = useState({
+const AddCarForm = ({ onClose, onSubmit, initialData = null }) => {
+  const [formData, setFormData] = useState(initialData || {
     name: '',
     series: '',
     year: '',
@@ -140,8 +140,11 @@ const AddCarForm = ({ onClose, onAdd }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name) return alert('Lütfen araba adını girin!');
-    onAdd(formData);
+    if (!formData.name || !formData.image) {
+      alert('Lütfen araba adı ve fotoğrafı ekleyin!');
+      return;
+    }
+    onSubmit(formData);
     onClose();
   };
 
@@ -149,7 +152,9 @@ const AddCarForm = ({ onClose, onAdd }) => {
     <div className="modal-overlay animate-fade-in" style={{ zIndex: 200 }}>
       <div className="modal-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '1.25rem' }}>Yeni Araba Ekle</h2>
+          <h3 style={{ margin: 0, fontSize: '1.2rem' }}>
+            {initialData ? '✏️ Arabayı Düzenle' : '🏎️ Yeni Araba Ekle'}
+          </h3>
           <button className="icon-btn" style={{ background: 'transparent', border: 'none' }} onClick={onClose}>✕</button>
         </div>
 
@@ -327,8 +332,8 @@ const AddCarForm = ({ onClose, onAdd }) => {
                 style={{ padding: '2px', height: '48px', cursor: 'pointer' }}
               />
             </div>
-            <button type="submit" className="btn-primary" style={{ flex: 1 }}>
-              Koleksiyona Ekle
+            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '14px', fontSize: '1.1rem' }}>
+              {initialData ? '💾 Değişiklikleri Kaydet' : '💾 Garaja Ekle'}
             </button>
           </div>
         </form>
