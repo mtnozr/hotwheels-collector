@@ -36,14 +36,15 @@ function App() {
       ) : (
         <div style={{ padding: '40px 16px', textAlign: 'center' }}>
           <div style={{ 
-            width: '80px', height: '80px', borderRadius: '50%', 
+            width: '100px', height: '100px', borderRadius: '50%', 
             background: 'linear-gradient(135deg, var(--hw-orange), #ff8a00)',
             margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '2rem'
+            fontSize: '3rem',
+            boxShadow: '0 4px 14px rgba(255, 91, 0, 0.4)'
           }}>
-            👤
+            👦🏻
           </div>
-          <h2 style={{ marginBottom: '8px' }}>Koleksiyoner</h2>
+          <h2 style={{ marginBottom: '8px' }}>Kağan ÖZER</h2>
           <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
             Toplam <strong>{cars.length}</strong> araban var!
           </p>

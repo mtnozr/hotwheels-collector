@@ -5,23 +5,15 @@ const Header = ({ searchQuery, setSearchQuery }) => {
     <header className="app-header">
       <div className="header-top">
         <div>
-          <h1 className="text-gradient" style={{ fontSize: '1.5rem' }}>Garajım</h1>
+          <h1 className="text-gradient" style={{ fontSize: '1.5rem' }}>Kağan'ın Garajı</h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Hot Wheels Koleksiyonum</p>
         </div>
-        <div style={{
-          width: '36px',
-          height: '36px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, var(--hw-blue), #00c6ff)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 'bold',
-          fontSize: '1rem',
-          color: '#fff',
-          boxShadow: '0 2px 10px rgba(0, 91, 187, 0.4)'
-        }}>
-          HW
+        <div style={{ width: '80px', display: 'flex', alignItems: 'center' }}>
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/f/f4/Hot_Wheels_logo.svg" 
+            alt="Hot Wheels Logo" 
+            style={{ width: '100%', filter: 'drop-shadow(0 2px 8px rgba(255, 91, 0, 0.4))' }} 
+          />
         </div>
       </div>
       
