@@ -1,11 +1,15 @@
 import React from 'react';
 
-const Header = ({ searchQuery, setSearchQuery }) => {
+const Header = ({ searchQuery, setSearchQuery, userName }) => {
+  // Basit bir kesme işareti kuralı: İsmin son harfine göre kesme işareti eklenebilir, ancak şimdilik sabit "'ın Garajı" veya "'in Garajı" kullanmak yerine, ismin sonuna sadece " Garajı" veya kesme işareti ekleyebiliriz.
+  // En kolayı, adın sadece ilk ismini alıp "'ın Garajı" yazmak veya doğrudan "[Ad Soyad] Garajı" yapmaktır.
+  const displayTitle = userName ? `${userName.split(' ')[0]}'ın Garajı` : "Garajım";
+
   return (
     <header className="app-header">
       <div className="header-top">
         <div>
-          <h1 className="text-gradient" style={{ fontSize: '1.5rem' }}>Kağan'ın Garajı</h1>
+          <h1 className="text-gradient" style={{ fontSize: '1.5rem' }}>{displayTitle}</h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Hot Wheels Koleksiyonum</p>
         </div>
           <div style={{

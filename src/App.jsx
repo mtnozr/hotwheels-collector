@@ -46,14 +46,14 @@ function App() {
     return <Auth />;
   }
 
-  const userEmail = session.user.email;
-  const username = userEmail.split('@')[0];
+  // Get full_name from Supabase user metadata
+  const userFullName = session.user.user_metadata?.full_name || 'Koleksiyoner';
 
   return (
     <div className="container">
       {activeTab === 'home' ? (
         <>
-          <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} userName={userFullName} />
           <main style={{ paddingTop: '16px' }}>
             <CarList cars={filteredCars} onCarClick={setSelectedCar} />
           </main>
@@ -67,9 +67,9 @@ function App() {
             fontSize: '3rem',
             boxShadow: '0 4px 14px rgba(255, 91, 0, 0.4)'
           }}>
-            👤
+            👦🏻
           </div>
-          <h2 style={{ marginBottom: '8px' }}>{username}</h2>
+          <h2 style={{ marginBottom: '8px' }}>{userFullName}</h2>
           <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
             Koleksiyonunda <strong>{cars.filter(c => c.user_id === session.user.id).length}</strong> araban var!
           </p>

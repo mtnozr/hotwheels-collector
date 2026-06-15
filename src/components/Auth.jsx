@@ -3,25 +3,57 @@ import { supabase } from '../supabaseClient';
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
 
   const handleAuth = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
+    // Supabase zorunlu olarak e-posta istediği için kullanıcı adından sahte bir e-posta üretiyoruz.
+    const safeUsername = username.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+    if (!safeUsername) {
+      alert('Lütfen geçerli bir kullanıcı adı girin (sadece harf ve rakam).');
+      setLoading(false);
+      return;
+    }
+    const fakeEmail = `${safeUsername}@garaj.local`;
+
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ 
+          email: fakeEmail, 
+          password 
+        });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        if (!fullName) {
+          alert('Lütfen ad ve soyadınızı girin.');
+          setLoading(false);
+          return;
+        }
+        
+        const { error } = await supabase.auth.signUp({ 
+          email: fakeEmail, 
+          password,
+          options: {
+            data: {
+              full_name: fullName
+            }
+          }
+        });
         if (error) throw error;
         alert('Kayıt başarılı! Lütfen giriş yapın.');
         setIsLogin(true);
       }
     } catch (error) {
-      alert(error.error_description || error.message);
+      if (error.message.includes('Invalid login credentials')) {
+        alert('Kullanıcı adı veya şifre hatalı.');
+      } else {
+        alert(error.error_description || error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -50,15 +82,31 @@ const Auth = () => {
         
         <form onSubmit={handleAuth}>
           <div className="input-group" style={{ textAlign: 'left' }}>
-            <label className="input-label">E-posta</label>
+            <label className="input-label">Kullanıcı Adı (Boşluksuz)</label>
             <input 
-              type="email" 
+              type="text" 
               className="input-field" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Örn: kagan123"
               required
             />
           </div>
+          
+          {!isLogin && (
+            <div className="input-group" style={{ textAlign: 'left' }}>
+              <label className="input-label">Ad Soyad</label>
+              <input 
+                type="text" 
+                className="input-field" 
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Örn: Kağan Özer"
+                required={!isLogin}
+              />
+            </div>
+          )}
+
           <div className="input-group" style={{ textAlign: 'left' }}>
             <label className="input-label">Şifre</label>
             <input 
