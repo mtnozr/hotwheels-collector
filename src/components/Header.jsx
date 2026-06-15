@@ -37,6 +37,9 @@ const Header = ({ searchQuery, setSearchQuery, userName, filter, setFilter }) =>
         <button className={`filter-pill ${filter === 'STH' ? 'active' : ''}`} onClick={() => setFilter('STH')}>
           SUPER TREASURE HUNT
         </button>
+        <button className={`filter-pill ${filter === 'TH' ? 'active' : ''}`} onClick={() => setFilter('TH')}>
+          TREASURE HUNT
+        </button>
         <button className={`filter-pill ${filter === 'PREMIUM' ? 'active' : ''}`} onClick={() => setFilter('PREMIUM')}>
           PREMİUM
         </button>

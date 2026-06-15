@@ -48,6 +48,8 @@ function App() {
     if (filter !== 'ALL') {
       if (filter === 'STH') {
         result = result.filter(car => car.rarity === 'Super Treasure Hunt');
+      } else if (filter === 'TH') {
+        result = result.filter(car => car.rarity === 'Treasure Hunt');
       } else if (filter === 'PREMIUM') {
         result = result.filter(car => car.rarity === 'Premium');
       } else if (filter === 'VINTAGE') {
