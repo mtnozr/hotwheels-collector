@@ -77,7 +77,7 @@ export const useCars = (session) => {
           image: imageUrl,
           user_id: session.user.id,
           is_shared: carData.is_shared || false,
-          owner_name: session.user.user_metadata?.full_name || 'Koleksiyoner'
+          owner_name: session.user.email ? `@${session.user.email.split('@')[0]}` : 'Koleksiyoner'
         }])
         .select();
         
@@ -110,7 +110,7 @@ export const useCars = (session) => {
           notes: carData.notes,
           image: imageUrl,
           is_shared: carData.is_shared !== undefined ? carData.is_shared : false,
-          owner_name: session.user.user_metadata?.full_name || 'Koleksiyoner'
+          owner_name: session.user.email ? `@${session.user.email.split('@')[0]}` : 'Koleksiyoner'
         })
         .eq('id', id)
         .eq('user_id', session.user.id) // Security check

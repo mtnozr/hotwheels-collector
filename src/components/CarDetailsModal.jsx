@@ -1,6 +1,8 @@
-import React from 'react';
+import { useState } from 'react';
 
 const CarDetailsModal = ({ car, currentUserId, onClose, onDelete, onEdit, onShare }) => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   if (!car) return null;
 
   const handleShare = async () => {
@@ -29,32 +31,55 @@ const CarDetailsModal = ({ car, currentUserId, onClose, onDelete, onEdit, onShar
   };
 
   return (
-    <div className="modal-overlay animate-fade-in" style={{ zIndex: 100 }}>
-      <div className="modal-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ fontSize: '1.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {car.name}
-          </h2>
-          <button className="btn-icon" onClick={onClose}>✕</button>
+    <>
+      {isFullscreen && car.image && (
+        <div 
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.95)',
+            zIndex: 9999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'zoom-out'
+          }}
+          onClick={() => setIsFullscreen(false)}
+        >
+          <img src={car.image} style={{ maxWidth: '95vw', maxHeight: '95vh', objectFit: 'contain' }} />
+          <div style={{ position: 'absolute', top: '20px', right: '20px', color: 'white', fontSize: '2rem', cursor: 'pointer' }}>✕</div>
         </div>
+      )}
+      <div className="modal-overlay animate-fade-in" style={{ zIndex: 100 }}>
+        <div className="modal-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h2 style={{ fontSize: '1.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {car.name}
+            </h2>
+            <button className="btn-icon" onClick={onClose}>✕</button>
+          </div>
 
-        <div style={{ 
-          height: '200px', 
-          backgroundColor: 'rgba(0,0,0,0.5)', 
-          borderRadius: 'var(--radius-lg)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '20px',
-          overflow: 'hidden',
-          padding: '10px'
-        }}>
-          {car.image ? (
-            <img src={car.image} alt={car.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-          ) : (
-            <span style={{ fontSize: '3rem' }}>🚗</span>
-          )}
-        </div>
+          <div style={{ 
+            height: '200px', 
+            backgroundColor: 'rgba(0,0,0,0.5)', 
+            borderRadius: 'var(--radius-lg)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '20px',
+            overflow: 'hidden',
+            padding: '10px',
+            position: 'relative',
+            cursor: car.image ? 'zoom-in' : 'default'
+          }}
+          onClick={() => car.image && setIsFullscreen(true)}
+          >
+            {car.image ? (
+              <>
+                <img src={car.image} alt={car.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                <div style={{ position: 'absolute', right: '10px', bottom: '10px', background: 'rgba(0,0,0,0.6)', padding: '4px 8px', borderRadius: '12px', fontSize: '0.8rem', pointerEvents: 'none' }}>🔍 Büyüt</div>
+              </>
+            ) : (
+              <span style={{ fontSize: '3rem' }}>🚗</span>
+            )}
+          </div>
 
         <div style={{ marginBottom: '24px' }}>
           <p style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
@@ -129,6 +154,7 @@ const CarDetailsModal = ({ car, currentUserId, onClose, onDelete, onEdit, onShar
         </div>
       </div>
     </div>
+    </>
   );
 };
 
