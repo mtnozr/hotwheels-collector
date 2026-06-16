@@ -23,8 +23,8 @@ const CarCard = ({ car, onClick, showOwner }) => {
       {showOwner && car.owner_name && (
         <div style={{ 
           position: 'absolute', 
-          top: '-10px', 
-          left: '10px', 
+          top: '8px', 
+          left: '8px', 
           background: 'rgba(0,0,0,0.8)', 
           backdropFilter: 'blur(4px)',
           padding: '4px 10px', 
