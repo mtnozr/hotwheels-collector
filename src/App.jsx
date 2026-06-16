@@ -8,6 +8,7 @@ import AddCarForm from './components/AddCarForm';
 import CarDetailsModal from './components/CarDetailsModal';
 import Auth from './components/Auth';
 import Profile from './components/Profile';
+import Explore from './components/Explore';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -123,10 +124,12 @@ function App() {
             filter={filter}
             setFilter={setFilter}
           />
-          <main style={{ paddingTop: '8px' }}>
+          <main style={{ paddingTop: '8px', paddingBottom: '100px' }}>
             <CarList cars={filteredCars} onCarClick={setSelectedCar} />
           </main>
         </>
+      ) : activeTab === 'explore' ? (
+        <Explore onCarClick={setSelectedCar} />
       ) : (
         <Profile cars={cars} session={session} />
       )}

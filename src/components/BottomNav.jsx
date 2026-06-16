@@ -8,7 +8,15 @@ const BottomNav = ({ activeTab, setActiveTab, onAddClick }) => {
         onClick={() => setActiveTab('home')}
       >
         <span className="nav-icon">🏠</span>
-        <span>Ana Sayfa</span>
+        <span>Garaj</span>
+      </button>
+
+      <button 
+        className={`nav-item ${activeTab === 'explore' ? 'active' : ''}`} 
+        onClick={() => setActiveTab('explore')}
+      >
+        <span className="nav-icon">🌍</span>
+        <span>Keşfet</span>
       </button>
 
       <button 
