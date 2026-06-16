@@ -332,7 +332,12 @@ const AddCarForm = ({ onClose, onSubmit, initialData = null }) => {
                 style={{ padding: '2px', height: '48px', cursor: 'pointer' }}
               />
             </div>
-            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '14px', fontSize: '1.1rem' }}>
+            <button 
+              type="submit" 
+              className="btn-primary" 
+              style={{ width: '100%', padding: '14px', fontSize: '1.1rem', opacity: (isRemovingBg || isAnalyzing) ? 0.5 : 1 }}
+              disabled={isRemovingBg || isAnalyzing}
+            >
               {initialData ? '💾 Değişiklikleri Kaydet' : '💾 Garaja Ekle'}
             </button>
           </div>
