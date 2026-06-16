@@ -146,7 +146,10 @@ function App() {
           }} 
           onSubmit={async (data) => {
             if (editingCar) {
-              await updateCar(editingCar.id, data);
+              const updatedCar = await updateCar(editingCar.id, data);
+              if (updatedCar && selectedCar && selectedCar.id === updatedCar.id) {
+                setSelectedCar(updatedCar);
+              }
             } else {
               await addCar(data);
             }
