@@ -2,7 +2,32 @@ import React, { useMemo } from 'react';
 import { supabase } from '../supabaseClient';
 
 const Profile = ({ cars, session }) => {
+  const [newPassword, setNewPassword] = React.useState('');
+  const [isChangingPassword, setIsChangingPassword] = React.useState(false);
+  const [message, setMessage] = React.useState('');
+
   const userFullName = session.user.user_metadata?.full_name || 'Koleksiyoner';
+  
+  const handlePasswordChange = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      setMessage('Şifre en az 6 karakter olmalıdır.');
+      return;
+    }
+    
+    setIsChangingPassword(true);
+    setMessage('');
+    
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      setMessage('Şifreniz başarıyla güncellendi!');
+      setNewPassword('');
+    } catch (error) {
+      setMessage('Hata: ' + error.message);
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
   
   // Calculate statistics only for the current user's cars
   const { totalCars, totalValue, rarities } = useMemo(() => {
@@ -84,7 +109,30 @@ const Profile = ({ cars, session }) => {
           <strong style={{ color: 'white', fontSize: '1.1rem' }}>{rarities['Common']}</strong>
         </div>
       </div>
-      
+      <div className="glass-panel" style={{ padding: '20px', textAlign: 'left', marginBottom: '30px' }}>
+        <h3 style={{ marginBottom: '16px', fontSize: '1.1rem', color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>🔒</span> Güvenlik
+        </h3>
+        <div className="input-group">
+          <input 
+            type="password" 
+            className="input-field" 
+            placeholder="Yeni Şifre" 
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </div>
+        {message && <p style={{ color: message.includes('başarılı') ? '#4ade80' : '#ff4d4d', fontSize: '0.9rem', marginBottom: '10px' }}>{message}</p>}
+        <button 
+          className="btn-primary" 
+          style={{ width: '100%', fontSize: '0.9rem', padding: '10px', background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid var(--border-color)', boxShadow: 'none' }}
+          onClick={handlePasswordChange}
+          disabled={isChangingPassword || !newPassword}
+        >
+          {isChangingPassword ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}
+        </button>
+      </div>
+
       <button 
         className="btn-primary" 
         style={{ width: '100%', background: 'transparent', border: '1px solid rgba(255, 77, 77, 0.5)', color: '#ff4d4d', boxShadow: 'none' }}
