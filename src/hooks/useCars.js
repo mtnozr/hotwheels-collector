@@ -5,12 +5,6 @@ export const useCars = (session) => {
   const [cars, setCars] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  useEffect(() => {
-    if (session) {
-      fetchCars();
-    }
-  }, [session]);
-
   const fetchCars = async () => {
     try {
       const { data, error } = await supabase
@@ -27,6 +21,12 @@ export const useCars = (session) => {
       setIsLoaded(true);
     }
   };
+
+  useEffect(() => {
+    if (session) {
+      fetchCars();
+    }
+  }, [session]);
 
   const uploadImage = async (base64Image) => {
     if (!base64Image || base64Image.startsWith('http')) return base64Image;
