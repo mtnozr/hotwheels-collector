@@ -6,14 +6,17 @@ export const useCars = (session) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    fetchCars();
-  }, []);
+    if (session) {
+      fetchCars();
+    }
+  }, [session]);
 
   const fetchCars = async () => {
     try {
       const { data, error } = await supabase
         .from('cars')
         .select('*')
+        .eq('user_id', session.user.id)
         .order('created_at', { ascending: false });
         
       if (error) throw error;
@@ -137,5 +140,25 @@ export const useCars = (session) => {
     }
   };
 
-  return { cars, isLoaded, addCar, updateCar, removeCar };
+  const shareCar = async (id) => {
+    if (!session) return;
+    try {
+      const { error } = await supabase
+        .from('cars')
+        .update({ is_shared: true })
+        .eq('id', id)
+        .eq('user_id', session.user.id);
+        
+      if (error) throw error;
+      
+      // Update local state to reflect it's shared
+      setCars(prev => prev.map(car => car.id === id ? { ...car, is_shared: true } : car));
+      return true;
+    } catch (error) {
+      console.error('Error sharing car:', error);
+      return false;
+    }
+  };
+
+  return { cars, isLoaded, addCar, updateCar, removeCar, shareCar };
 };

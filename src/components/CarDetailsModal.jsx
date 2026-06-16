@@ -1,22 +1,27 @@
 import React from 'react';
 
-const CarDetailsModal = ({ car, currentUserId, onClose, onDelete, onEdit }) => {
+const CarDetailsModal = ({ car, currentUserId, onClose, onDelete, onEdit, onShare }) => {
   if (!car) return null;
 
   const handleShare = async () => {
+    // Arabayı veritabanında "paylaşıldı" olarak işaretle
+    if (onShare && !car.is_shared && currentUserId === car.user_id) {
+      await onShare(car.id);
+    }
+
+    const shareUrl = `${window.location.origin}/?shared_car=${car.id}`;
     const shareData = {
       title: `${car.name} - Hot Wheels Koleksiyonum`,
       text: `Hot Wheels koleksiyonumdan ${car.name} (${car.year || ''}) modeline bak! Nadirlik: ${car.rarity}`,
-      url: window.location.href, // This would normally point to a specific car URL
+      url: shareUrl,
     };
 
     try {
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        // Fallback
-        await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}`);
-        alert('Araba bilgileri panoya kopyalandı! Arkadaşlarına gönderebilirsin.');
+        await navigator.clipboard.writeText(`${shareData.text}\n${shareUrl}`);
+        alert('Araba linki kopyalandı! İstediğin kişiye gönderebilirsin.');
       }
     } catch (err) {
       console.error('Error sharing', err);

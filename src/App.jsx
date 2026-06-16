@@ -13,6 +13,27 @@ function App() {
   const [session, setSession] = useState(null);
   const [isSessionLoaded, setIsSessionLoaded] = useState(false);
 
+  const [sharedCarId, setSharedCarId] = useState(null);
+  const [sharedCarData, setSharedCarData] = useState(null);
+  const [loadingShared, setLoadingShared] = useState(false);
+
+  useEffect(() => {
+    // Check for shared_car in URL before session loads
+    const params = new URLSearchParams(window.location.search);
+    const carId = params.get('shared_car');
+    if (carId) {
+      setSharedCarId(carId);
+      fetchSharedCar(carId);
+    }
+  }, []);
+
+  const fetchSharedCar = async (id) => {
+    setLoadingShared(true);
+    const { data } = await supabase.from('cars').select('*').eq('id', id).eq('is_shared', true).single();
+    if (data) setSharedCarData(data);
+    setLoadingShared(false);
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -26,7 +47,7 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const { cars, isLoaded, addCar, updateCar, removeCar } = useCars(session);
+  const { cars, isLoaded, addCar, updateCar, removeCar, shareCar } = useCars(session);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('ALL');
   const [activeTab, setActiveTab] = useState('home');
@@ -63,6 +84,24 @@ function App() {
 
     return result;
   }, [cars, searchQuery, filter]);
+
+  if (sharedCarId) {
+    if (loadingShared) return <div className="container" style={{padding:'40px', textAlign:'center'}}>Araba yükleniyor...</div>;
+    if (!sharedCarData) return <div className="container" style={{padding:'40px', textAlign:'center'}}>Araba bulunamadı veya paylaşımı durdurulmuş.</div>;
+    return (
+      <div className="container" style={{ position: 'relative', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CarDetailsModal 
+           car={sharedCarData} 
+           currentUserId={session?.user?.id}
+           onClose={() => {
+             window.history.pushState({}, '', '/');
+             setSharedCarId(null);
+             setSharedCarData(null);
+           }}
+        />
+      </div>
+    );
+  }
 
   if (!isSessionLoaded) return null;
 
@@ -122,6 +161,7 @@ function App() {
           onClose={() => setSelectedCar(null)} 
           onDelete={removeCar}
           onEdit={(car) => setEditingCar(car)}
+          onShare={shareCar}
         />
       )}
     </div>
