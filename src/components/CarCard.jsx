@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CarCard = ({ car, onClick }) => {
+const CarCard = ({ car, onClick, showOwner }) => {
   // Rarity styling
   const getRarityDisplay = (rarity) => {
     switch (rarity) {
@@ -20,6 +20,24 @@ const CarCard = ({ car, onClick }) => {
   return (
     <div className="car-card-premium animate-fade-in" onClick={() => onClick(car)} style={{ '--card-glow': car.color || '#ff5b00' }}>
       
+      {showOwner && car.owner_name && (
+        <div style={{ 
+          position: 'absolute', 
+          top: '-10px', 
+          left: '10px', 
+          background: 'rgba(0,0,0,0.8)', 
+          backdropFilter: 'blur(4px)',
+          padding: '4px 10px', 
+          borderRadius: '12px',
+          fontSize: '0.75rem',
+          color: 'var(--hw-orange)',
+          zIndex: 10,
+          border: '1px solid rgba(255,91,0,0.3)'
+        }}>
+          👤 {car.owner_name}
+        </div>
+      )}
+
       {car.series && (
         <div className="card-number-badge">
           {car.series}

@@ -322,6 +322,48 @@ const AddCarForm = ({ onClose, onSubmit, initialData = null }) => {
             />
           </div>
 
+          <div className="input-group" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            background: 'rgba(255,255,255,0.05)',
+            padding: '12px 16px',
+            borderRadius: 'var(--radius-md)'
+          }}>
+            <div>
+              <label style={{ color: 'white', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>🌍 Toplulukta Görünsün (Keşfet)</label>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Açık olursa diğer koleksiyonerler görebilir.</span>
+            </div>
+            <label style={{ position: 'relative', display: 'inline-block', width: '50px', height: '28px' }}>
+              <input 
+                type="checkbox" 
+                checked={formData.is_shared || false}
+                onChange={(e) => setFormData({...formData, is_shared: e.target.checked})}
+                style={{ opacity: 0, width: 0, height: 0 }}
+              />
+              <span style={{
+                position: 'absolute',
+                cursor: 'pointer',
+                top: 0, left: 0, right: 0, bottom: 0,
+                backgroundColor: formData.is_shared ? 'var(--hw-orange)' : 'rgba(255,255,255,0.2)',
+                transition: '.4s',
+                borderRadius: '34px'
+              }}>
+                <span style={{
+                  position: 'absolute',
+                  content: '""',
+                  height: '20px',
+                  width: '20px',
+                  left: formData.is_shared ? '26px' : '4px',
+                  bottom: '4px',
+                  backgroundColor: 'white',
+                  transition: '.4s',
+                  borderRadius: '50%'
+                }}></span>
+              </span>
+            </label>
+          </div>
+
           <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
             <div className="input-group" style={{ width: '60px', marginBottom: 0 }}>
               <input 

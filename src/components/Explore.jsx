@@ -52,7 +52,7 @@ const Explore = ({ onCarClick }) => {
           </p>
         </div>
       ) : (
-        <CarList cars={exploreCars} onCarClick={onCarClick} />
+        <CarList cars={exploreCars} onCarClick={onCarClick} showOwner={true} />
       )}
       
       <style>{`

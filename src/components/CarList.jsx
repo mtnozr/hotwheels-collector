@@ -1,7 +1,7 @@
 import React from 'react';
 import CarCard from './CarCard';
 
-const CarList = ({ cars, onCarClick }) => {
+const CarList = ({ cars, onCarClick, showOwner = false }) => {
   if (!cars || cars.length === 0) {
     return (
       <div className="empty-state animate-fade-in" style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)' }}>
@@ -15,7 +15,7 @@ const CarList = ({ cars, onCarClick }) => {
   return (
     <div className="car-grid">
       {cars.map((car) => (
-        <CarCard key={car.id} car={car} onClick={onCarClick} />
+        <CarCard key={car.id} car={car} onClick={onCarClick} showOwner={showOwner} />
       ))}
     </div>
   );

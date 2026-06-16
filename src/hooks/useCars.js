@@ -75,7 +75,9 @@ export const useCars = (session) => {
           price: carData.price,
           notes: carData.notes,
           image: imageUrl,
-          user_id: session.user.id
+          user_id: session.user.id,
+          is_shared: carData.is_shared || false,
+          owner_name: session.user.user_metadata?.full_name || 'Koleksiyoner'
         }])
         .select();
         
@@ -106,7 +108,9 @@ export const useCars = (session) => {
           rarity: carData.rarity,
           price: carData.price,
           notes: carData.notes,
-          image: imageUrl
+          image: imageUrl,
+          is_shared: carData.is_shared !== undefined ? carData.is_shared : false,
+          owner_name: session.user.user_metadata?.full_name || 'Koleksiyoner'
         })
         .eq('id', id)
         .eq('user_id', session.user.id) // Security check
