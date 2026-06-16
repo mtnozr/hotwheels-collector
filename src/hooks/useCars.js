@@ -114,13 +114,15 @@ export const useCars = (session) => {
         
       if (error) throw error;
       
-      if (data && data.length > 0) {
-        setCars(prev => prev.map(car => car.id === id ? data[0] : car));
-        return data[0];
+      if (!data || data.length === 0) {
+        throw new Error("Veritabanı güncellemeyi reddetti. RLS Update yetkisi eksik olabilir.");
       }
+
+      setCars(prev => prev.map(car => car.id === id ? data[0] : car));
+      return data[0];
     } catch (error) {
       console.error('Error updating car:', error);
-      alert('Araba güncellenirken bir hata oluştu.');
+      alert('Araba güncellenirken bir hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
     }
   };
 
