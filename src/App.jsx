@@ -123,13 +123,14 @@ function App() {
             userName={userFullName} 
             filter={filter}
             setFilter={setFilter}
+            session={session}
           />
           <main style={{ paddingTop: '8px', paddingBottom: '100px' }}>
             <CarList cars={filteredCars} onCarClick={setSelectedCar} />
           </main>
         </>
       ) : activeTab === 'explore' ? (
-        <Explore onCarClick={setSelectedCar} />
+        <Explore onCarClick={setSelectedCar} session={session} />
       ) : (
         <Profile cars={cars} session={session} />
       )}

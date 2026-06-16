@@ -2,9 +2,54 @@ import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../supabaseClient';
 import CarList from './CarList';
 
-const Explore = ({ onCarClick }) => {
+const Explore = ({ onCarClick, session }) => {
   const [exploreCars, setExploreCars] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [likesData, setLikesData] = useState([]);
+
+  const fetchLikes = async (carIds) => {
+    if (!carIds || carIds.length === 0) return;
+    const { data, error } = await supabase.from('likes').select('*').in('car_id', carIds);
+    if (data) setLikesData(data);
+  };
+
+  const handleLike = async (car) => {
+    if (!session) return;
+    const currentUserId = session.user.id;
+    const currentUsername = session.user.email ? `@${session.user.email.split('@')[0]}` : 'Koleksiyoner';
+    
+    const existingLike = likesData.find(l => l.car_id === car.id && l.user_id === currentUserId);
+    
+    if (existingLike) {
+      // Unlike
+      setLikesData(prev => prev.filter(l => l.id !== existingLike.id)); // Optimistic UI
+      await supabase.from('likes').delete().eq('id', existingLike.id);
+    } else {
+      // Like
+      const tempId = Date.now().toString();
+      const newLike = { id: tempId, car_id: car.id, user_id: currentUserId, username: currentUsername };
+      setLikesData(prev => [...prev, newLike]); // Optimistic UI
+      
+      const { data } = await supabase.from('likes').insert([{
+        car_id: car.id,
+        user_id: currentUserId,
+        username: currentUsername
+      }]).select();
+      
+      if (data) {
+        setLikesData(prev => prev.map(l => l.id === tempId ? data[0] : l));
+        // Bildirim gönder (kendi arabası değilse)
+        if (car.user_id !== currentUserId) {
+          await supabase.from('notifications').insert([{
+            recipient_id: car.user_id,
+            sender_username: currentUsername,
+            car_name: car.name,
+            car_id: car.id
+          }]);
+        }
+      }
+    }
+  };
 
   const fetchGlobalCars = async () => {
     try {
@@ -17,7 +62,10 @@ const Explore = ({ onCarClick }) => {
         .limit(50);
         
       if (error) throw error;
-      if (data) setExploreCars(data);
+      if (data) {
+        setExploreCars(data);
+        fetchLikes(data.map(c => c.id));
+      }
     } catch (error) {
       console.error('Error fetching global cars:', error);
     } finally {
@@ -117,7 +165,14 @@ const Explore = ({ onCarClick }) => {
           <p>Arama kriterlerine uygun araba bulunamadı.</p>
         </div>
       ) : (
-        <CarList cars={filteredExploreCars} onCarClick={onCarClick} showOwner={true} />
+        <CarList 
+          cars={filteredExploreCars} 
+          onCarClick={onCarClick} 
+          showOwner={true} 
+          likesData={likesData}
+          onLike={handleLike}
+          currentUserId={session?.user?.id}
+        />
       )}
       
       <style>{`
