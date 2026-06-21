@@ -109,42 +109,52 @@ const Explore = ({ onCarClick, session }) => {
     return result;
   }, [exploreCars, searchQuery, filter]);
 
+  const chips = ['ALL', 'STH', 'TH', 'PREMIUM', 'VINTAGE'];
+  const chipLabels = {
+    'ALL': 'TÜMÜ',
+    'STH': 'SUPER TREASURE HUNT',
+    'TH': 'TREASURE HUNT',
+    'PREMIUM': 'PREMİUM',
+    'VINTAGE': 'VİNTAGE'
+  };
+
   return (
-    <div style={{ padding: '0 16px', paddingBottom: '100px' }}>
-      <div style={{ marginBottom: '16px', paddingTop: '20px' }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>🌍 Keşfet</h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.4' }}>
+    <div style={{ paddingBottom: '100px' }}>
+      <div style={{ padding: '0 18px', paddingTop: '20px' }}>
+        <h2 className="fredoka" style={{ fontSize: '1.5rem', marginBottom: '8px', color: '#16233F' }}>🌍 Keşfet</h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: '1.4', fontWeight: '700' }}>
           Topluluğun paylaşıma açtığı birbirinden özel Hot Wheels modellerini inceleyin.
         </p>
       </div>
 
-      <div className="search-container" style={{ marginBottom: '16px' }}>
-        <span className="search-icon">🔍</span>
-        <input 
-          type="text" 
-          className="search-input" 
-          placeholder="Toplulukta Ara..." 
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      {/* search */}
+      <div style={{ margin: '14px 18px 0', display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div style={{ flex: 1, height: '54px', borderRadius: '18px', background: '#fff', border: '2px solid #E6EDF7', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 16px', boxShadow: '0 4px 12px rgba(20,32,58,.05)' }}>
+          <div style={{ width: '18px', height: '18px', border: '3px solid #B4C0D6', borderRadius: '50%', position: 'relative' }}>
+            <div style={{ position: 'absolute', width: '3px', height: '8px', background: '#B4C0D6', borderRadius: '2px', right: '-4px', bottom: '-4px', transform: 'rotate(-45deg)' }}></div>
+          </div>
+          <input 
+            type="text"
+            placeholder="Toplulukta Ara..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ border: 'none', background: 'transparent', outline: 'none', fontWeight: '800', color: '#16233F', fontSize: '15px', width: '100%' }}
+          />
+        </div>
       </div>
 
-      <div className="filter-scroll" style={{ marginBottom: '20px' }}>
-        <button className={`filter-pill ${filter === 'ALL' ? 'active' : ''}`} onClick={() => setFilter('ALL')}>
-          TÜMÜ
-        </button>
-        <button className={`filter-pill ${filter === 'STH' ? 'active' : ''}`} onClick={() => setFilter('STH')}>
-          SUPER TREASURE HUNT
-        </button>
-        <button className={`filter-pill ${filter === 'TH' ? 'active' : ''}`} onClick={() => setFilter('TH')}>
-          TREASURE HUNT
-        </button>
-        <button className={`filter-pill ${filter === 'PREMIUM' ? 'active' : ''}`} onClick={() => setFilter('PREMIUM')}>
-          PREMİUM
-        </button>
-        <button className={`filter-pill ${filter === 'VINTAGE' ? 'active' : ''}`} onClick={() => setFilter('VINTAGE')}>
-          VİNTAGE
-        </button>
+      {/* chips */}
+      <div style={{ marginTop: '14px', padding: '0 18px', display: 'flex', gap: '10px', overflowX: 'auto', scrollbarWidth: 'none', marginBottom: '20px' }}>
+        {chips.map(c => {
+          const isActive = filter === c;
+          const activeStyle = { flex: 'none', fontWeight: '900', fontSize: '14px', color: '#fff', padding: '11px 18px', borderRadius: '999px', background: 'linear-gradient(135deg,#FF4D2E,#FF7A2E)', boxShadow: '0 6px 14px rgba(255,77,46,.4)', cursor: 'pointer', whiteSpace: 'nowrap' };
+          const inactiveStyle = { flex: 'none', fontWeight: '900', fontSize: '14px', color: '#5A6A85', padding: '11px 18px', borderRadius: '999px', background: '#EAF1FB', cursor: 'pointer', whiteSpace: 'nowrap' };
+          return (
+            <div key={c} onClick={() => setFilter(c)} style={isActive ? activeStyle : inactiveStyle}>
+              {chipLabels[c]}
+            </div>
+          );
+        })}
       </div>
 
       {loading ? (

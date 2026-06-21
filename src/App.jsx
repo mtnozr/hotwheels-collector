@@ -115,31 +115,35 @@ function App() {
 
   return (
     <div className="container">
-      {activeTab === 'home' ? (
-        <>
-          <Header 
-            searchQuery={searchQuery} 
-            setSearchQuery={setSearchQuery} 
-            userName={userFullName} 
-            filter={filter}
-            setFilter={setFilter}
-            session={session}
-          />
-          <main style={{ paddingTop: '8px', paddingBottom: '100px' }}>
-            <CarList cars={filteredCars} onCarClick={setSelectedCar} />
-          </main>
-        </>
-      ) : activeTab === 'explore' ? (
-        <Explore onCarClick={setSelectedCar} session={session} />
-      ) : (
-        <Profile cars={cars} session={session} />
-      )}
+      <div className="app-wrapper">
+        <div className="scroll-area">
+          {activeTab === 'home' ? (
+            <>
+              <Header 
+                searchQuery={searchQuery} 
+                setSearchQuery={setSearchQuery} 
+                userName={userFullName} 
+                filter={filter}
+                setFilter={setFilter}
+                session={session}
+              />
+              <main style={{ paddingBottom: '100px' }}>
+                <CarList cars={filteredCars} onCarClick={setSelectedCar} likesData={[]} onLike={undefined} currentUserId={session?.user?.id} />
+              </main>
+            </>
+          ) : activeTab === 'explore' ? (
+            <Explore onCarClick={setSelectedCar} session={session} />
+          ) : (
+            <Profile cars={cars} session={session} />
+          )}
 
-      <BottomNav 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        onAddClick={() => setIsAdding(true)} 
-      />
+          <BottomNav 
+            activeTab={activeTab} 
+            setActiveTab={setActiveTab} 
+            onAddClick={() => setIsAdding(true)} 
+          />
+        </div>
+      </div>
 
       {(isAdding || editingCar) && (
         <AddCarForm 
