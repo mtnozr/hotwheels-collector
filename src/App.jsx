@@ -136,13 +136,13 @@ function App() {
           ) : (
             <Profile cars={cars} session={session} />
           )}
-
-          <BottomNav 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab} 
-            onAddClick={() => setIsAdding(true)} 
-          />
         </div>
+        
+        <BottomNav 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          onAddClick={() => setIsAdding(true)} 
+        />
       </div>
 
       {(isAdding || editingCar) && (
